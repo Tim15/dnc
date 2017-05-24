@@ -106,7 +106,8 @@ def train(num_training_iterations, report_interval):
 
   train_loss = dataset.cost(output_logits, dataset_tensors.target,
                             dataset_tensors.mask)
-
+  # TODO: Add hook for interface function err(x)
+  
   # Set up optimizer with global norm clipping.
   trainable_variables = tf.trainable_variables()
   grads, _ = tf.clip_by_global_norm(
@@ -124,6 +125,7 @@ def train(num_training_iterations, report_interval):
       FLAGS.learning_rate, epsilon=FLAGS.optimizer_epsilon)
   train_step = optimizer.apply_gradients(
       zip(grads, trainable_variables), global_step=global_step)
+  # TODO: insert hook for interface function update()
 
   saver = tf.train.Saver()
 
@@ -146,6 +148,12 @@ def train(num_training_iterations, report_interval):
 
     for train_iteration in xrange(start_iteration, num_training_iterations):
       _, loss = sess.run([train_step, train_loss])
+      # TODO:
+      # Insert hook for backend interface function run(x)
+      # Spilt up into seperate sess.run calls, needs to return a numpy array.
+      # Or, can implement multiple module modes, one for training, another or inference or error calculation
+      # If we split the module into multiple modes, we must be able to pass mode parameters (training steps)
+      
       total_loss += loss
 
       if (train_iteration + 1) % report_interval == 0:
